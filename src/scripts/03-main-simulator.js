@@ -159,9 +159,11 @@
             const _0xc1 = document.getElementById('cr-1');
             const _0xc2 = document.getElementById('cr-2');
             const _0xc3 = document.getElementById('cr-3');
+            const _0xcf = document.getElementById('cr-footer');
             if(_0xc1) _0xc1.innerText = _0xRefStr;
             if(_0xc2) _0xc2.innerText = _0xRefStr;
             if(_0xc3) _0xc3.innerText = _0xRefStr;
+            if(_0xcf) _0xcf.innerText = _0xRefStr;
 
             const container = getContainer();
 

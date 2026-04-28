@@ -56,8 +56,16 @@
    CSS file.
    ------------------------------------------------------------------ */
 
-        body { margin: 0; overflow: hidden; background-color: #111827; touch-action: none; }
-        #canvas-container { width: 100%; height: 100%; }
+        /* KaTeX injects `body { position: relative }` via its stylesheet.
+           This combined with our `overflow: hidden` can cause Chrome to treat
+           the body as the containing block for position:fixed children (e.g.
+           the Deformity Tutor chatbot button), potentially clipping them.
+           Resetting to `position: static` restores the viewport as the
+           containing block for fixed elements without affecting KaTeX rendering. */
+        body { margin: 0; overflow: hidden; background-color: #111827; position: static; }
+        /* touch-action:none is scoped to the 3D canvas so drag gestures work
+           without blocking tap events elsewhere (e.g. the Deformity Tutor button). */
+        #canvas-container { width: 100%; height: 100%; touch-action: none; }
         
         .math-matrix { display: inline-block; position: relative; padding: 0 12px; font-family: 'Courier New', Courier, monospace; font-weight: 600; }
         .math-matrix::before, .math-matrix::after { content: ""; position: absolute; top: 0; bottom: 0; width: 6px; border: 2px solid #9ca3af; }
