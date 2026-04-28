@@ -1,0 +1,8 @@
+[build]
+  publish = "."
+
+# Serve the app at the site root without renaming the source file.
+[[redirects]]
+  from = "/"
+  to = "/Global%20Axes%20v4.2.html"
+  status = 200
