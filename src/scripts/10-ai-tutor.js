@@ -78,6 +78,11 @@ function escapeHTML(s) {
 // at module load and inserted into #ai-tutor-mount (or document.body).
 // -------------------------------------------------------------
 function createWidget() {
+    // Guard against double-initialisation (e.g. if the module is somehow
+    // evaluated more than once by the bundler or the HTML has two entry
+    // points that both reach this code).
+    if (document.querySelector('[data-component="deformity-tutor"]')) return;
+
     const mount = document.getElementById('ai-tutor-mount') || document.body;
 
     // Container that holds the floating button + expanding panel.
