@@ -1,0 +1,44 @@
+Copyright (c) 2026 Christos Nikolaou. All rights reserved.
+
+This software and its source code, including the contents of this
+repository and any compiled or bundled output (including but not
+limited to JavaScript bundles, CSS bundles, and HTML), are the
+proprietary and confidential work of the copyright holder.
+
+No license, express or implied, is granted by publication of, or
+public access to, the deployed application or any of its assets. In
+particular, you may NOT, without prior written permission of the
+copyright holder:
+
+  1. copy, reproduce, redistribute, mirror, host, sublicense, sell,
+     rent, or otherwise make available the source code, the compiled
+     bundles, the textual content (including but not limited to the
+     biomechanics knowledge base, mathematical report, and tutoring
+     content), or any derivative work thereof;
+
+  2. reverse engineer, decompile, de-minify, beautify, re-symbolicate,
+     or otherwise attempt to reconstruct the original source from any
+     compiled, minified, or obfuscated artefact;
+
+  3. use the source code, compiled bundles, or textual content to
+     train, fine-tune, evaluate, or otherwise develop any machine
+     learning model;
+
+  4. remove, obscure, or alter this notice or any copyright,
+     trademark, or attribution notice contained in the software.
+
+Personal, in-browser use of the deployed application for its intended
+educational purpose is permitted; this permission does not transfer
+any rights in the underlying code or content.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE
+FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+The application is a teaching aid and is NOT a medical device. It is
+not intended to diagnose, treat, cure, or prevent any disease, and
+must not be used as the sole basis for any clinical decision.

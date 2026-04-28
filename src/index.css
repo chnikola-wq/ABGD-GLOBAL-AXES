@@ -1,0 +1,468 @@
+/* KaTeX stylesheet — pulled from the npm package so the chat tutor can
+   render LaTeX math in assistant bubbles. Must precede the Tailwind
+   directives because PostCSS rejects `@import` after other rules. */
+@import 'katex/dist/katex.min.css';
+
+/* Tailwind directives — processed at build time by PostCSS instead of
+   the runtime CDN script (cdn.tailwindcss.com) used previously. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Original inline <style> block from Global Axes v4.2.html, moved
+   here so PostCSS can process it alongside the Tailwind layers.
+   ------------------------------------------------------------------ */
+        body { margin: 0; overflow: hidden; background-color: #111827; touch-action: none; }
+        #canvas-container { width: 100%; height: 100%; }
+        
+        .math-matrix { display: inline-block; position: relative; padding: 0 12px; font-family: 'Courier New', Courier, monospace; font-weight: 600; }
+        .math-matrix::before, .math-matrix::after { content: ""; position: absolute; top: 0; bottom: 0; width: 6px; border: 2px solid #9ca3af; }
+        .math-matrix::before { left: 0; border-right: none; }
+        .math-matrix::after { right: 0; border-left: none; }
+        .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 16px; text-align: right; padding: 8px 4px; }
+        
+        .math-fraction { display: inline-flex; flex-direction: column; justify-content: center; align-items: center; vertical-align: middle; line-height: 1.2; margin: 0 4px; }
+        .math-fraction .numerator { border-bottom: 1px solid currentColor; padding: 0 4px 2px 4px; }
+        .math-fraction .denominator { padding: 2px 4px 0 4px; }
+        
+        /* ── Custom Range Slider Styling ────────────────────── */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #374151;
+            outline: none;
+            transition: background 0.2s ease;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #818cf8;
+            cursor: pointer;
+            border: 2px solid #312e81;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4), 0 0 0 0 rgba(99, 102, 241, 0);
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.6), 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.8), 0 0 0 6px rgba(99, 102, 241, 0.2);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #818cf8;
+            cursor: pointer;
+            border: 2px solid #312e81;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+        }
+        input[type=range]::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.6), 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        input[type=range]::-moz-range-track {
+            height: 6px;
+            border-radius: 3px;
+            background: #374151;
+        }
+        input[type=range].slider-phi::-webkit-slider-thumb { background: #f87171; border-color: #7f1d1d; box-shadow: 0 2px 6px rgba(248, 113, 113, 0.4); }
+        input[type=range].slider-phi::-moz-range-thumb { background: #f87171; border-color: #7f1d1d; box-shadow: 0 2px 6px rgba(248, 113, 113, 0.4); }
+        input[type=range].slider-psi::-webkit-slider-thumb { background: #60a5fa; border-color: #1e3a5f; box-shadow: 0 2px 6px rgba(96, 165, 250, 0.4); }
+        input[type=range].slider-psi::-moz-range-thumb { background: #60a5fa; border-color: #1e3a5f; box-shadow: 0 2px 6px rgba(96, 165, 250, 0.4); }
+        input[type=range].slider-theta::-webkit-slider-thumb { background: #4ade80; border-color: #14532d; box-shadow: 0 2px 6px rgba(74, 222, 128, 0.4); }
+        input[type=range].slider-theta::-moz-range-thumb { background: #4ade80; border-color: #14532d; box-shadow: 0 2px 6px rgba(74, 222, 128, 0.4); }
+        input[type=range]:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        input[type=range]:disabled::-webkit-slider-thumb { cursor: not-allowed; }
+        input[type=range]:disabled::-moz-range-thumb { cursor: not-allowed; }
+
+        /* ── Scrollbar ────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        /* ── Resizer ────────────────────── */
+        #resizer-handle { height: 24px; width: 100%; cursor: ns-resize; background: transparent; display: flex; align-items: center; justify-content: center; position: absolute; top: -12px; left: 0; z-index: 40; }
+        #resizer-handle::after { content: ""; width: 50px; height: 5px; background: #6b7280; border-radius: 3px; transition: background 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        #resizer-handle:hover::after, #resizer-handle:active::after { background: #818cf8; }
+
+        /* ── Draggable Projection Labels ────────────────────── */
+        .proj-label-draggable {
+            cursor: grab;
+            user-select: none;
+            pointer-events: auto !important;
+            transition: box-shadow 0.15s ease;
+        }
+        .proj-label-draggable:active {
+            cursor: grabbing;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        }
+        .proj-label-draggable.dragged {
+            border-style: dashed !important;
+        }
+        .leader-line {
+            position: absolute;
+            pointer-events: none;
+            z-index: 9;
+            border: none;
+            height: 1px;
+            transform-origin: 0 0;
+            background: rgba(156, 163, 175, 0.4);
+        }
+
+        /* ── Enhanced Button Styling ────────────────────── */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(79, 70, 229, 0.3);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* ── Control Panel Card Styling ────────────────────── */
+        .control-card {
+            background: linear-gradient(180deg, rgba(55, 65, 81, 0.4) 0%, rgba(31, 41, 55, 0.4) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.6);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .control-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.05);
+        }
+
+        /* ── Slider Group Styling ────────────────────── */
+        .slider-group {
+            background: linear-gradient(180deg, rgba(31, 41, 55, 0.5) 0%, rgba(17, 24, 39, 0.3) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .slider-group:focus-within {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08);
+        }
+        .slider-group.slider-group-phi:focus-within { border-color: rgba(248, 113, 113, 0.4); box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.08); }
+        .slider-group.slider-group-psi:focus-within { border-color: rgba(96, 165, 250, 0.4); box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.08); }
+        .slider-group.slider-group-theta:focus-within { border-color: rgba(74, 222, 128, 0.4); box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.08); }
+
+        /* ── Matrix Display Enhancement ────────────────────── */
+        .matrix-container {
+            background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* ── Output Value Labels ────────────────────── */
+        .output-value {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+
+/* ------------------------------------------------------------------
+   Chatbot-tutor styling — mirrors the reference osteo-clean repo so
+   the floating widget looks identical here. The widget itself lives
+   in src/scripts/10-ai-tutor.js and is mounted into #ai-tutor-mount.
+   ------------------------------------------------------------------ */
+
+/* Fade-in for the chat panel and assistant bubbles */
+.fade-in { animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Slow attention pulse for the closed Tutor button */
+@keyframes pulse-slow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.45); }
+    50%      { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+}
+.animate-pulse-slow { animation: pulse-slow 2.6s ease-out infinite; }
+
+/* Prose styles for assistant chat bubbles. Applied to the bot's
+   messages only (user messages stay plain). */
+.chat-prose p                { margin-top: 0.5em; margin-bottom: 0.5em; line-height: 1.6; }
+.chat-prose p:first-child    { margin-top: 0; }
+.chat-prose p:last-child     { margin-bottom: 0; }
+.chat-prose ul               { list-style: disc; padding-left: 1.25em; margin: 0.4em 0; }
+.chat-prose ol               { list-style: decimal; padding-left: 1.25em; margin: 0.4em 0; }
+.chat-prose li               { margin: 0.2em 0; line-height: 1.5; }
+.chat-prose strong           { font-weight: 700; }
+.chat-prose em               { font-style: italic; }
+.chat-prose h1,
+.chat-prose h2,
+.chat-prose h3               { font-weight: 700; margin: 0.6em 0 0.2em; line-height: 1.3; }
+.chat-prose h1               { font-size: 1.05em; }
+.chat-prose h2               { font-size: 1em; }
+.chat-prose h3               { font-size: 0.95em; }
+.chat-prose code             { font-family: monospace; background: rgba(255,255,255,0.10); border-radius: 3px; padding: 0.1em 0.3em; font-size: 0.9em; }
+.chat-prose hr               { border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 0.6em 0; }
+.chat-prose a                { color: #93c5fd; text-decoration: underline; }
+
+/* ------------------------------------------------------------------
+   The block below is the original inline <style> from
+   "Bone Deformity Simulator v15.8.html", moved here verbatim so the
+   build pipeline can ship it as a single minified, content-hashed
+   CSS file.
+   ------------------------------------------------------------------ */
+
+        body { margin: 0; overflow: hidden; background-color: #111827; touch-action: none; }
+        #canvas-container { width: 100%; height: 100%; }
+        
+        .math-matrix { display: inline-block; position: relative; padding: 0 12px; font-family: 'Courier New', Courier, monospace; font-weight: 600; }
+        .math-matrix::before, .math-matrix::after { content: ""; position: absolute; top: 0; bottom: 0; width: 6px; border: 2px solid #9ca3af; }
+        .math-matrix::before { left: 0; border-right: none; }
+        .math-matrix::after { right: 0; border-left: none; }
+        .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 16px; text-align: right; padding: 8px 4px; }
+        
+        .math-fraction { display: inline-flex; flex-direction: column; justify-content: center; align-items: center; vertical-align: middle; line-height: 1.2; margin: 0 4px; }
+        .math-fraction .numerator { border-bottom: 1px solid currentColor; padding: 0 4px 2px 4px; }
+        .math-fraction .denominator { padding: 2px 4px 0 4px; }
+        
+        /* ── Custom Range Slider Styling ────────────────────── */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #374151;
+            outline: none;
+            transition: background 0.2s ease;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #818cf8;
+            cursor: pointer;
+            border: 2px solid #312e81;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4), 0 0 0 0 rgba(99, 102, 241, 0);
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.6), 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.8), 0 0 0 6px rgba(99, 102, 241, 0.2);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #818cf8;
+            cursor: pointer;
+            border: 2px solid #312e81;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+        }
+        input[type=range]::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.6), 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        input[type=range]::-moz-range-track {
+            height: 6px;
+            border-radius: 3px;
+            background: #374151;
+        }
+        input[type=range].slider-phi::-webkit-slider-thumb { background: #f87171; border-color: #7f1d1d; box-shadow: 0 2px 6px rgba(248, 113, 113, 0.4); }
+        input[type=range].slider-phi::-moz-range-thumb { background: #f87171; border-color: #7f1d1d; box-shadow: 0 2px 6px rgba(248, 113, 113, 0.4); }
+        input[type=range].slider-psi::-webkit-slider-thumb { background: #60a5fa; border-color: #1e3a5f; box-shadow: 0 2px 6px rgba(96, 165, 250, 0.4); }
+        input[type=range].slider-psi::-moz-range-thumb { background: #60a5fa; border-color: #1e3a5f; box-shadow: 0 2px 6px rgba(96, 165, 250, 0.4); }
+        input[type=range].slider-theta::-webkit-slider-thumb { background: #4ade80; border-color: #14532d; box-shadow: 0 2px 6px rgba(74, 222, 128, 0.4); }
+        input[type=range].slider-theta::-moz-range-thumb { background: #4ade80; border-color: #14532d; box-shadow: 0 2px 6px rgba(74, 222, 128, 0.4); }
+        input[type=range]:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        input[type=range]:disabled::-webkit-slider-thumb { cursor: not-allowed; }
+        input[type=range]:disabled::-moz-range-thumb { cursor: not-allowed; }
+
+        /* ── Scrollbar ────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        /* ── Resizer ────────────────────── */
+        #resizer-handle { height: 24px; width: 100%; cursor: ns-resize; background: transparent; display: flex; align-items: center; justify-content: center; position: absolute; top: -12px; left: 0; z-index: 40; }
+        #resizer-handle::after { content: ""; width: 50px; height: 5px; background: #6b7280; border-radius: 3px; transition: background 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        #resizer-handle:hover::after, #resizer-handle:active::after { background: #818cf8; }
+
+        /* ── Draggable Projection Labels ────────────────────── */
+        .proj-label-draggable {
+            cursor: grab;
+            user-select: none;
+            pointer-events: auto !important;
+            transition: box-shadow 0.15s ease;
+        }
+        .proj-label-draggable:active {
+            cursor: grabbing;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        }
+        .proj-label-draggable.dragged {
+            border-style: dashed !important;
+        }
+        .leader-line {
+            position: absolute;
+            pointer-events: none;
+            z-index: 9;
+            border: none;
+            height: 1px;
+            transform-origin: 0 0;
+            background: rgba(156, 163, 175, 0.4);
+        }
+
+        /* ── Enhanced Button Styling ────────────────────── */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(79, 70, 229, 0.3);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* ── Control Panel Card Styling ────────────────────── */
+        .control-card {
+            background: linear-gradient(180deg, rgba(55, 65, 81, 0.4) 0%, rgba(31, 41, 55, 0.4) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.6);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .control-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.05);
+        }
+
+        /* ── Slider Group Styling ────────────────────── */
+        .slider-group {
+            background: linear-gradient(180deg, rgba(31, 41, 55, 0.5) 0%, rgba(17, 24, 39, 0.3) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .slider-group:focus-within {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08);
+        }
+        .slider-group.slider-group-phi:focus-within { border-color: rgba(248, 113, 113, 0.4); box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.08); }
+        .slider-group.slider-group-psi:focus-within { border-color: rgba(96, 165, 250, 0.4); box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.08); }
+        .slider-group.slider-group-theta:focus-within { border-color: rgba(74, 222, 128, 0.4); box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.08); }
+
+        /* ── Matrix Display Enhancement ────────────────────── */
+        .matrix-container {
+            background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* ── Nav Tab Enhancement ────────────────────── */
+        .nav-tab {
+            position: relative;
+            transition: color 0.2s ease;
+        }
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #818cf8;
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+        .nav-tab:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        .nav-tab.active::after {
+            width: 100%;
+            left: 0;
+            background: #6366f1;
+        }
+
+        /* ── Output Value Labels ────────────────────── */
+        .output-value {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+
+        /* ── Math Report Section Headers ────────────────────── */
+        .math-section-card {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.6) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.75rem;
+            transition: border-color 0.3s ease;
+        }
+        .math-section-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
