@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 // full terms live in /LICENSE at the repository root; the banner only
 // has to put copy/reuse on notice.
 const LICENSE_BANNER = `/*!
- * Bone Deformity Simulator: Eulerian Approach
+ * Bone Deformity Simulator: Non Eulerian, Global Axes Approach
  * Copyright (c) 2026 Christos Nikolaou. All rights reserved.
  *
  * Proprietary and confidential. No license is granted to copy,
