@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#111827">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Deformity Engine">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzExMTgyNyIvPjxwYXRoIGQ9Ik0zNDQgMTk4bC03Mi03MmMtMjUtMjUtNjUuNS0yNS05MC41IDBzLTI1IDY1LjUgMCA5MC41bDE0IDE0LTg2IDg2Yy0yNSAyNS0yNSA2NS41IDAgOTAuNXM2NS41IDI1IDkwLjUgMGw3Mi03MmMyNS0yNSA2NS41LTI1IDkwLjUgMHMyNSA2NS41IDAgOTAuNWwtMTQtMTQgODYtODZjMjUtMjUgMjUtNjUuNSAwLTkwLjVzLTY1LjUtMjUtOTAuNSAweiIgZmlsbD0iIzRmNDZlNSIvPjwvc3ZnPg==">
+    <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"Deformity Engine, Non Eulerian","short_name":"Deformity Eng","start_url":".","display":"standalone","background_color":"#111827","theme_color":"#111827","icons":[{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzExMTgyNyIvPjxwYXRoIGQ9Ik0zNDQgMTk4bC03Mi03MmMtMjUtMjUtNjUuNS0yNS05MC41IDBzLTI1IDY1LjUgMCA5MC41bDE0IDE0LTg2IDg2Yy0yNSAyNS0yNSA2NS41IDAgOTAuNXM2NS41IDI1IDkwLjUgMGw3Mi03MmMyNS0yNSA2NS41LTI1IDkwLjUgMHMyNSA2NS41IDAgOTAuNWwtMTQtMTQgODYtODZjMjUtMjUgMjUtNjUuNSAwLTkwLjVzLTY1LjUtMjUtOTAuNSAweiIgZmlsbD0iIzRmNDZlNSIvPjwvc3ZnPg==","sizes":"512x512","type":"image/svg+xml"}]}'>
+    
+    <title>Deformity Engine: Non Eulerian, Global Axes Approach</title>
+</head>
+<body class="flex flex-col h-screen font-sans text-gray-200 bg-gray-900 overflow-hidden">
+
+    <nav class="flex justify-between border-b border-gray-700/80 bg-gradient-to-r from-gray-800 via-gray-800 to-gray-800/95 flex-shrink-0 h-14 md:h-12 px-1 md:px-4 items-end overflow-hidden shadow-lg">
+        <div class="flex h-full shrink min-w-0">
+            <button id="btn-tab-sim" class="px-2 sm:px-4 md:px-6 py-3 md:py-0 md:h-full text-xs sm:text-sm md:text-base font-bold text-indigo-400 border-b-2 border-indigo-400 focus:outline-none transition-colors whitespace-nowrap">
+                <span class="flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" /></svg>
+                    Simulator
+                </span>
+            </button>
+            <button id="btn-tab-math" class="px-2 sm:px-4 md:px-6 py-3 md:py-0 md:h-full text-xs sm:text-sm md:text-base font-bold text-gray-400 hover:text-gray-200 focus:outline-none transition-colors whitespace-nowrap overflow-hidden text-ellipsis">
+                <span class="flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                    Mathematical Report
+                </span>
+            </button>
+        </div>
+        <div class="flex items-center shrink-0 h-full pb-2 md:pb-1 pr-1 md:pr-2 ml-1">
+            <span class="text-[9px] sm:text-[10px] md:text-xs text-gray-500 tracking-tight md:tracking-wide flex flex-col md:block text-right leading-tight whitespace-nowrap">
+                <span class="mb-[1px] md:mb-0 md:mr-1">Created by</span><strong id="cr-1" class="text-gray-300 font-semibold"></strong>
+            </span>
+        </div>
+    </nav>
+
+    <!-- VIEW: SIMULATOR -->
+    <div id="view-sim" class="flex flex-col flex-grow overflow-hidden relative">
+        <div class="flex flex-col md:flex-row flex-grow overflow-hidden relative">
+            <div id="control-backdrop" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden transition-opacity backdrop-blur-sm"></div>
+
+            <div id="control-panel" class="absolute inset-y-0 left-0 z-40 w-[85%] max-w-sm md:w-1/3 lg:w-1/4 h-full bg-gradient-to-b from-gray-800 to-gray-800/95 shadow-2xl md:shadow-lg transform -translate-x-full md:translate-x-0 md:relative transition-transform duration-300 flex flex-col overflow-y-auto border-r border-gray-700/80">
+                <div class="p-5 md:p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h1 class="text-xl font-bold mb-1 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent" aria-label="Deformity Engine">Deformity Engine</h1>
+                            <p class="text-xs text-gray-400 tracking-wide">Non Eulerian, Global Axes Approach</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="toggle-inst-btn" class="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs font-semibold text-gray-200 transition whitespace-nowrap shadow-sm shadow-gray-900/50" title="Toggle Quick Reference">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="hidden md:inline">Help</span>
+                            </button>
+                            <button id="close-controls-btn" class="md:hidden p-1.5 bg-gray-700 hover:bg-gray-600 rounded text-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="sliders-parent" class="space-y-6 mb-8 flex flex-col">
+                        <div id="container-phi" class="order-1 slider-group slider-group-phi">
+                            <div class="flex justify-between mb-1 items-center">
+                                <label class="font-semibold text-sm">φ (Phi) - Global X-Axis</label>
+                                <div class="flex items-center">
+                                    <input type="number" id="input-phi" value="0" min="-89" max="89" class="w-16 bg-gray-700 text-red-400 font-mono font-bold text-sm px-2 py-1 rounded border border-gray-600 focus:outline-none focus:border-indigo-500 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50">
+                                    <span class="ml-1 text-gray-400 text-sm">°</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-400 mb-2">Procurvatum / Recurvatum</div>
+                            <input type="range" id="slider-phi" min="-89" max="89" value="0" class="w-full slider-phi disabled:opacity-50">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>-89° (Recurvatum)</span>
+                                <span>+89° (Procurvatum)</span>
+                            </div>
+                        </div>
+
+                        <div id="container-psi" class="order-2 slider-group slider-group-psi">
+                            <div class="flex justify-between mb-1 items-center">
+                                <label class="font-semibold text-sm">ψ (Psi) - Global Z-Axis</label>
+                                <div class="flex items-center">
+                                    <input type="number" id="input-psi" value="0" min="-89" max="89" class="w-16 bg-gray-700 text-blue-400 font-mono font-bold text-sm px-2 py-1 rounded border border-gray-600 focus:outline-none focus:border-indigo-500 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50">
+                                    <span class="ml-1 text-gray-400 text-sm">°</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-400 mb-2">Varus / Valgus</div>
+                            <input type="range" id="slider-psi" min="-89" max="89" value="0" class="w-full slider-psi disabled:opacity-50">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>-89° (Varus)</span>
+                                <span>+89° (Valgus)</span>
+                            </div>
+                        </div>
+
+                        <div id="container-theta" class="order-3 slider-group slider-group-theta">
+                            <div class="flex justify-between mb-1 items-center">
+                                <label class="font-semibold text-sm">θ (Theta) - Global Y-Axis</label>
+                                <div class="flex items-center">
+                                    <input type="number" id="input-theta" value="0" min="-89" max="89" class="w-16 bg-gray-700 text-green-400 font-mono font-bold text-sm px-2 py-1 rounded border border-gray-600 focus:outline-none focus:border-indigo-500 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50">
+                                    <span class="ml-1 text-gray-400 text-sm">°</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-400 mb-2">Internal / External Torsion</div>
+                            <input type="range" id="slider-theta" min="-89" max="89" value="0" class="w-full slider-theta disabled:opacity-50">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>-89° (Internal)</span>
+                                <span>+89° (External)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 space-y-3">
+                        <div class="flex items-center justify-between control-card">
+                            <div class="flex items-center">
+                                <span class="text-sm font-semibold text-gray-300">Global Sequence</span>
+                            </div>
+                            <select id="sequence-select" class="bg-gray-800 text-sm text-gray-200 border border-gray-600 rounded px-2 py-1.5 md:py-1 focus:outline-none focus:border-indigo-500">
+                                <option value="ExtXZY">Global X → Global Z → Global Y</option>
+                                <option value="ExtZXY">Global Z → Global X → Global Y</option>
+                                <option value="ExtYZX">Global Y → Global Z → Global X</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-between control-card">
+                            <div class="flex items-center">
+                                <span class="text-sm font-semibold text-gray-300">Show Osteotomy Wedge</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-wedge" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between control-card">
+                            <div class="flex items-center">
+                                <span class="text-sm font-semibold text-gray-300">Show Single Osteotomy</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-single" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between control-card">
+                            <div class="flex items-center">
+                                <span class="text-sm font-semibold text-gray-300">Clean Mode (Hide Axes)</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-hide-axes" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between control-card" style="border-color: rgba(99, 102, 241, 0.3); background: linear-gradient(180deg, rgba(79, 70, 229, 0.08) 0%, rgba(31, 41, 55, 0.4) 100%);">
+                            <div class="flex items-center">
+                                <span class="text-sm font-bold text-indigo-300">Show Mathematical Basis</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-basis" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-6 md:mb-8">
+                        <button id="correct-btn" class="w-full py-3 md:py-2 btn-primary text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            Correct Deformity
+                        </button>
+                        <button id="reset-btn" class="w-full py-3 md:py-2 btn-secondary text-gray-100 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            Reset Alignment
+                        </button>
+                    </div>
+
+                    <div class="mt-auto bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-inner hidden md:block">
+                        <h2 class="text-sm font-bold mb-3 text-center uppercase tracking-wider text-gray-400">Total Rotation Matrix (R<sub>tot</sub>)</h2>
+                        <div class="flex justify-center text-sm mb-3">
+                            <div class="math-matrix">
+                                <div class="matrix-grid" id="matrix-display">
+                                    <span>1.000</span><span>0.000</span><span>0.000</span>
+                                    <span>0.000</span><span>1.000</span><span>0.000</span>
+                                    <span>0.000</span><span>0.000</span><span>1.000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p id="sequence-display" class="text-xs text-center text-gray-500 mb-4 pb-4 border-b border-gray-700">Seq: Global X → Global Z → Global Y</p>
+                        
+                        <h2 class="text-sm font-bold mb-3 text-center uppercase tracking-wider text-purple-400">Single Hinge (Axis-Angle)</h2>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-400 font-semibold">Magnitude (&Theta;):</span>
+                                <span id="hinge-angle-display" class="font-mono font-bold text-white bg-gray-800 px-2 py-1 rounded border border-gray-700 shadow-sm">0.00&deg;</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-400 font-semibold">Axis (u<sub>rot</sub>):</span>
+                                <span id="hinge-axis-display" class="font-mono font-bold text-yellow-400 bg-gray-800 px-2 py-1 rounded border border-gray-700 text-xs tracking-tighter shadow-sm">[ 1.000, 0.000, 0.000 ]</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-center md:hidden border-t border-gray-700 pt-4">
+                        <span class="text-xs text-gray-500 tracking-wide">Created by <strong id="cr-2" class="text-gray-400 font-semibold"></strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D Canvas -->
+            <div id="canvas-container" class="flex-grow relative overflow-hidden bg-gray-900 w-full h-full">
+                <button id="open-controls-btn" class="md:hidden absolute top-4 left-4 z-20 btn-primary p-2.5 rounded-lg shadow-lg text-white border border-indigo-400/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                </button>
+
+                <div class="absolute top-4 right-4 bg-gray-900/85 backdrop-blur-sm px-3 py-2 rounded-lg text-xs text-gray-300 shadow-lg pointer-events-none z-20 border border-gray-700/50">
+                    <span class="hidden md:inline">Left Click + Drag</span><span class="md:hidden">1-Finger Drag</span> to Orbit • <span class="hidden md:inline">Scroll</span><span class="md:hidden">Pinch</span> to Zoom
+                </div>
+
+                <div id="label-phi" class="absolute text-red-400 font-bold font-serif text-xl md:text-2xl pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">φ</div>
+                <div id="label-psi" class="absolute text-blue-400 font-bold font-serif text-xl md:text-2xl pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">ψ</div>
+                <div id="label-theta" class="absolute text-green-400 font-bold font-serif text-xl md:text-2xl pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">θ</div>
+
+                <div id="proj-lbl-frontal" class="absolute text-blue-300 font-mono font-bold text-xs md:text-sm bg-gray-900/90 backdrop-blur-sm border border-blue-500/30 px-2.5 py-1.5 rounded-lg pointer-events-none drop-shadow-lg hidden z-10 text-center shadow-blue-500/10" style="transform: translate(-50%, -50%);">0.0°</div>
+                <div id="proj-lbl-sagittal" class="absolute text-red-300 font-mono font-bold text-xs md:text-sm bg-gray-900/90 backdrop-blur-sm border border-red-500/30 px-2.5 py-1.5 rounded-lg pointer-events-none drop-shadow-lg hidden z-10 text-center shadow-red-500/10" style="transform: translate(-50%, -50%);">0.0°</div>
+                <div id="proj-lbl-transverse" class="absolute text-green-300 font-mono font-bold text-xs md:text-sm bg-gray-900/90 backdrop-blur-sm border border-green-500/30 px-2.5 py-1.5 rounded-lg pointer-events-none drop-shadow-lg hidden z-10 text-center whitespace-nowrap shadow-green-500/10" style="transform: translate(-50%, -50%);">0.0°</div>
+
+                <!-- Global Axes Labels -->
+                <div id="label-origin" class="absolute text-gray-400 font-bold font-serif text-base md:text-lg pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">O</div>
+                <div id="label-x" class="absolute text-red-600 font-bold font-serif text-xs md:text-sm pointer-events-none drop-shadow-md hidden z-10 whitespace-nowrap" style="transform: translate(-50%, -50%);">Global X (Lateral)</div>
+                <div id="label-y" class="absolute text-green-600 font-bold font-serif text-xs md:text-sm pointer-events-none drop-shadow-md hidden z-10 whitespace-nowrap" style="transform: translate(-50%, -50%);">Global Y (Proximal)</div>
+                <div id="label-z" class="absolute text-blue-600 font-bold font-serif text-xs md:text-sm pointer-events-none drop-shadow-md hidden z-10 whitespace-nowrap" style="transform: translate(-50%, -50%);">Global Z (Anterior)</div>
+                
+                <!-- Final Bone Axes Labels -->
+                <div id="label-x-final" class="absolute text-red-300 font-bold font-serif text-lg md:text-xl pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">X<sub>bone</sub></div>
+                <div id="label-y-final" class="absolute text-green-300 font-bold font-serif text-lg md:text-xl pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">Y<sub>bone</sub></div>
+                <div id="label-z-final" class="absolute text-blue-300 font-bold font-serif text-lg md:text-xl pointer-events-none drop-shadow-md hidden z-10" style="transform: translate(-50%, -50%);">Z<sub>bone</sub></div>
+
+                <!-- Mathematical Basis Labels -->
+                <div id="label-u" class="absolute text-white font-mono font-bold text-xs bg-gray-900/80 px-2 py-0.5 rounded pointer-events-none hidden z-10" style="transform: translate(-50%, -50%);">u</div>
+                <div id="label-xref" class="absolute text-red-400 font-mono font-bold text-xs bg-gray-900/80 px-2 py-0.5 rounded pointer-events-none hidden z-10" style="transform: translate(-50%, -50%);">xref</div>
+                <div id="label-urot" class="absolute text-yellow-400 font-mono font-bold text-xs bg-gray-900/80 px-2 py-0.5 rounded border border-yellow-500/50 pointer-events-none hidden z-10" style="transform: translate(-50%, -50%);">urot</div>
+                <div id="label-nwedge" class="absolute text-cyan-400 font-mono font-bold text-xs bg-gray-900/80 px-2 py-0.5 rounded border border-cyan-500/50 pointer-events-none hidden z-10" style="transform: translate(-50%, -50%);">n<sub>wedge</sub></div>
+
+                <div id="label-wedge-angle" class="absolute text-amber-400 font-mono font-bold text-xs md:text-sm bg-gray-900/80 border border-amber-500/50 px-2 py-1 rounded pointer-events-none drop-shadow-md hidden z-30" style="transform: translate(-50%, -50%);">Closing Wedge: 0.0°</div>
+                <div id="label-single-angle" class="absolute text-purple-400 font-mono font-bold text-xs md:text-sm bg-gray-900/80 border border-purple-500/50 px-2 py-1 rounded pointer-events-none drop-shadow-md hidden z-30" style="transform: translate(-50%, -50%);">Single Cut: 0.0°</div>
+
+                <div id="label-plane-transverse" class="absolute font-bold text-sm tracking-wide pointer-events-none drop-shadow-lg hidden z-10" style="transform: translate(-50%, -50%); color: #4ade80; text-shadow: 0 0 8px rgba(74,222,128,0.5);">Global Transverse Plane</div>
+                <div id="label-plane-frontal" class="absolute font-bold text-sm tracking-wide pointer-events-none drop-shadow-lg hidden z-10" style="transform: translate(-50%, -50%); color: #60a5fa; text-shadow: 0 0 8px rgba(96,165,250,0.5);">Global Frontal Plane</div>
+                <div id="label-plane-sagittal" class="absolute font-bold text-sm tracking-wide pointer-events-none drop-shadow-lg hidden z-10" style="transform: translate(-50%, -50%); color: #f87171; text-shadow: 0 0 8px rgba(248,113,113,0.5);">Global Sagittal Plane</div>
+                <svg id="screen-overlay" class="absolute inset-0 w-full h-full pointer-events-none z-30 drop-shadow-md" style="display: none;">
+                    <path id="screen-arc" fill="rgba(255, 255, 255, 0.15)" stroke="white" stroke-width="2" />
+                    <line id="screen-line-ref" stroke="rgba(255, 255, 255, 0.5)" stroke-width="2" stroke-dasharray="4" />
+                    <line id="screen-line-dist" stroke="white" stroke-width="2" />
+                    <text id="screen-text" fill="white" font-weight="bold" font-size="14" font-family="monospace" filter="drop-shadow(0px 2px 2px rgba(0,0,0,0.8))"></text>
+                </svg>
+            </div>
+        </div>
+
+   <div id="instructions-panel" class="hidden absolute md:relative bottom-0 w-full h-[85%] md:h-[45%] flex-shrink-0 bg-gray-800 border-t md:border-t-2 border-indigo-500 overflow-y-auto p-4 sm:p-6 md:p-10 z-50 md:z-30 shadow-[0_-15px_30px_rgba(0,0,0,0.6)] md:shadow-[0_-10px_25px_rgba(0,0,0,0.5)] transition-all duration-300 rounded-t-2xl md:rounded-none">
+            <div id="resizer-handle"><div class="h-1.5 w-12 bg-gray-500 rounded-full md:hidden mt-4"></div></div>
+            <button id="close-inst-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition bg-gray-700 hover:bg-gray-600 rounded-full p-2 z-10"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            <div class="max-w-6xl mx-auto mt-6 md:mt-4 pb-10">
+                
+                <div class="flex items-center mb-6 border-b border-gray-700 pb-4">
+                    <h2 class="text-xl md:text-3xl font-bold text-gray-100 pr-6">Understanding Global Axis Deformities</h2>
+                </div>
+                <p class="text-sm md:text-base text-gray-300 mb-8 leading-relaxed">This simulator breaks from traditional Euler sequence methodologies by implementing a <strong>Non-Eulerian, Global Axes Approach</strong>. All spatial deviations are calculated as extrinsic rotations around the fixed axes of the room, rather than hierarchical tilted local hinges.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                    <div class="bg-gray-800/50 rounded p-4 md:p-6 border border-gray-700">
+                        <h3 class="font-bold text-indigo-300 mb-2">Fixed Global Axes (Extrinsic)</h3>
+                        <p class="text-xs md:text-sm text-gray-400 mb-3">Instead of "Prime" axes (X', Y'') that move with the bone, all inputs here revolve around the absolute room coordinates:</p>
+                        <ul class="text-xs md:text-sm space-y-2 text-gray-300">
+                            <li><strong class="text-red-400">Global X</strong>: Fixed Lateral axis (Procurvatum/Recurvatum).</li>
+                            <li><strong class="text-blue-400">Global Z</strong>: Fixed Anterior axis (Varus/Valgus).</li>
+                            <li><strong class="text-green-400">Global Y</strong>: Fixed Proximal axis (Torsion).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800/50 rounded p-4 md:p-6 border border-gray-700">
+                        <h3 class="font-bold text-indigo-300 mb-2">Mathematical Basis Vectors</h3>
+                        <p class="text-xs md:text-sm text-gray-400 mb-3">Enable the mathematical basis toggle in the controls to view these vectors:</p>
+                        <ul class="text-xs md:text-sm space-y-2 text-gray-300">
+                            <li><strong class="text-white">u</strong>: The perfect, straight neutral distal axis.</li>
+                            <li><strong class="text-yellow-400">urot</strong>: The unique Eigenvector. The bone can be fixed in one move by rotating around this axis.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 md:gap-10 mt-6 md:mt-10">
+                    <div class="bg-gray-800/50 rounded p-4 md:p-6 border border-gray-700">
+                        <h3 class="text-lg md:text-xl font-bold text-indigo-400 mb-4 flex items-center"><span class="bg-indigo-500/20 text-indigo-300 rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center mr-3 text-xs md:text-sm">1</span> Osteotomy Correction Cuts</h3>
+                        <p class="text-sm md:text-base text-gray-300 mb-4 leading-relaxed">A surgeon planning an osteotomy needs to know the absolute magnitude of the bend. If a bone has both Procurvatum and Valgus, it is bent in <strong class="text-gray-100">one single, diagonal 3D plane</strong>.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div class="bg-gray-900 p-4 md:p-5 rounded-lg border-l-4 border-amber-500">
+                                <h4 class="font-bold text-amber-400 mb-2 text-base md:text-lg flex items-center"><span class="w-3 h-3 bg-amber-500 rounded-sm mr-2"></span> Closing Wedge</h4>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">This highlights the exact convex wedge of bone that must be removed to straighten the anatomical axes. A pure closing wedge corrects angulation but leaves physical torsion unaffected.</p>
+                            </div>
+                            <div class="bg-gray-900 p-4 md:p-5 rounded-lg border-l-4 border-purple-500">
+                                <h4 class="font-bold text-purple-400 mb-2 text-base md:text-lg flex items-center"><span class="w-3 h-3 bg-purple-500 rounded-full mr-2"></span> Single Cut Osteotomy</h4>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">This highlights a single plane and the exact rotation around its normal axis required to correct angulation AND torsion simultaneously in one mathematically perfect movement.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/50 rounded p-4 md:p-6 border border-gray-700 mb-4">
+                        <h3 class="text-lg md:text-xl font-bold text-indigo-400 mb-4 flex items-center"><span class="bg-indigo-500/20 text-indigo-300 rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center mr-3 text-xs md:text-sm">2</span> Decoding the Transverse "Projected Twist" Label</h3>
+                        <p class="text-sm md:text-base text-gray-300 mb-6 leading-relaxed">When a multi-planar deformity is induced, the green label on the floor reveals a complete mathematical breakdown of the torsional state, separating geometric illusions from clinical truth.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-gray-900 p-4 rounded border-l-4 border-green-500 shadow-md">
+                                <strong class="text-green-400 text-base md:text-lg block mb-1">Projected Twist</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed">The true, mathematical 2D angle of the bone's shadow on the floor. This represents what a perfectly parallel, orthographic top-down X-ray would measure, free from any camera distortion.</p>
+                            </div>
+
+                            <div class="bg-gray-900 p-4 rounded border-l-4 border-amber-400 shadow-md">
+                                <strong class="text-amber-400 text-base md:text-lg block mb-1">Codman-Induced Twist</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed">The baseline geometric torsion inherently forced upon the bone by sweeping it through multiple planes (Codman's Paradox), even if the commanded intrinsic torsion (&theta;) is explicitly set to 0&deg;.</p>
+                            </div>
+
+                            <div class="bg-gray-900 p-4 rounded border-l-4 border-indigo-400 shadow-md">
+                                <strong class="text-indigo-300 text-base md:text-lg block mb-1">&theta;-Induced Twist</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed">The explicit internal or external rotation manually commanded by the surgeon via the sequence parameters.</p>
+                            </div>
+
+                            <div class="bg-gray-900 p-4 rounded border-l-4 border-gray-400 shadow-md">
+                                <strong class="text-gray-300 text-base md:text-lg block mb-1">Total intrinsic</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed">The true total intrinsic torsion permanently embedded within the 3D bone segment (<em class="text-gray-300">Codman + &theta;</em>). If a surgeon performs a pure closing wedge osteotomy to fix the angulation, this is the exact physical twist that will remain in the healed bone.</p>
+                            </div>
+
+                            <div class="bg-gray-900 p-4 rounded border-l-4 border-pink-500 shadow-md mt-6">
+                                <strong class="text-pink-400 text-base md:text-lg block mb-1 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                    Camera Error
+                                </strong>
+                                <p class="text-sm text-gray-400 leading-relaxed">The degrees of <strong>false visual torsion</strong> mathematically injected into the 3D scene. Because standard 3D software mimics the human eye (perspective projection), the lens physically stretches and foreshortens the tilted bone to simulate depth, corrupting visual alignment.</p>
+                            </div>
+
+                            <div class="bg-gray-900 p-4 rounded border-l-4 border-white shadow-md">
+                                <strong class="text-white text-base md:text-lg block mb-1">Screen Angle</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed">The visually distorted angle you physically see on your monitor (<em class="text-gray-300">Projected Twist + Camera Error</em>). Measuring this angle clinically with an on-screen protractor will result in a severely flawed diagnosis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- MATHEMATICAL REPORT -->
+
+<div id="view-math" class="hidden flex-col flex-grow overflow-y-auto bg-gray-900 p-4 sm:p-8 md:p-12 relative">
+    <div class="max-w-4xl mx-auto text-gray-300 w-full pb-20">
+        
+        <div class="flex flex-col md:flex-row md:items-center mb-8 border-b border-gray-700 pb-6 gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-indigo-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
+            <h2 class="text-xl md:text-3xl font-bold text-gray-100 leading-tight">A Linear Algebraic Framework for Long Bone Deformity: Non-Eulerian Global Extrinsic Rotations</h2>
+        </div>
+        
+        <div class="bg-gray-800/80 p-5 md:p-6 rounded-lg border-l-4 border-indigo-500 mb-12 shadow-md">
+            <p class="text-sm md:text-base leading-relaxed text-gray-300">
+                <strong class="text-indigo-300 uppercase tracking-wider text-xs block mb-2">Abstract</strong><br> 
+                The engineering approach to quantification of long bone deformity would be by using intrinsic Eulerian sequences—where secondary deviations are measured around an already-deformed, tilted internal axis. This report explores a more straightforward way with the use of the <strong>Global Extrinsic Approach</strong>. By commanding all spatial transformations relative to the fixed, immutable global axes of the anatomical reference planes, we create a visualisation process more familiar to the clinician. Clinicians are used to thinking of the distal bone segment moving about an unchanged framework of the proximal bone segment.
+            </p>
+        </div>
+        
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">1. Establishing the Orthonormal Basis</h3>
+            <p class="mb-4 text-sm md:text-base leading-relaxed">The core problem in classic 2D analysis is that it defines deformity relative to the observer's eye rather than absolute space. We establish a canonical 3D coordinate frame anchored to the stable proximal segment, which maps perfectly to the global fixed axes of the operating room.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-6">
+                <div class="bg-gray-800/50 rounded p-4 md:p-6 border border-gray-700">
+                    <h4 class="font-bold text-gray-100 mb-3 text-base md:text-lg">The Reference Longitudinal Axis (<b>u</b>)</h4>
+                    <p class="text-xs md:text-sm mb-3">Fundamental to characterising a deformity is the definition of a "straight" baseline. It represents exactly <strong>where the distal bone anatomic axis would be if there was no deformity</strong>. Visually, it is the white arrow pointing straight down.</p>
+                    <div class="flex items-center justify-center font-mono text-base md:text-lg bg-gray-900 py-3 rounded">
+                        <span class="mr-3 font-bold text-white"><b>u</b></span> = 
+                        <div class="math-matrix bg-gray-800 rounded p-2 ml-3">
+                            <div class="grid grid-cols-1 gap-2 text-center text-sm md:text-base">
+                                <span>0</span><span>-1</span><span>0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800/50 rounded p-4 md:p-6 border border-gray-700">
+                    <h4 class="font-bold text-gray-100 mb-3 text-base md:text-lg">The Torsional Benchmark (<b>x</b><sub>ref</sub>)</h4>
+                    <p class="text-xs md:text-sm mb-3">We must also establish a baseline for axial rotation. This reference medio-lateral axis represents <strong>the initial orientation of the anatomical medial-lateral axis (the medial condyle direction) before any deformity is applied</strong>. Visually, it is the red arrow pointing to the side.</p>
+                    <div class="flex items-center justify-center font-mono text-base md:text-lg bg-gray-900 py-3 rounded">
+                        <span class="mr-3 font-bold text-red-400"><b>x</b><sub>ref</sub></span> = 
+                        <div class="math-matrix bg-gray-800 rounded p-2 ml-3">
+                            <div class="grid grid-cols-1 gap-2 text-center text-sm md:text-base">
+                                <span>1</span><span>0</span><span>0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">2. The Extrinsic Solution: Global Axis Composition</h3>
+            <p class="mb-4 text-sm md:text-base leading-relaxed">In classic intrinsic Euler systems (the X, Z', Y'' method), each rotation tilts the hinges for the subsequent rotation. In our <strong>Global Extrinsic Approach</strong>, we abandon this mobile hierarchy. All transformations are applied as sweeps around the absolute global axes X, Y, and Z.</p>
+            
+            <div class="p-4 md:p-6 bg-gray-800 rounded shadow-inner overflow-x-auto">
+                <span class="text-amber-500 font-bold uppercase tracking-wider text-xs md:text-sm block mb-3">Extrinsic Pre-Multiplication</span>
+                <p class="mb-3 text-sm md:text-base">When rotations are applied with respect to fixed global axes, the total deformity matrix R<sub>tot</sub> is calculated mathematically by <strong>pre-multiplying</strong> the successive matrices. If the sequence commanded is Global X, then Global Z, then Global Y:</p>
+                <div class="text-center font-mono text-lg md:text-2xl text-indigo-300 mt-4 tracking-widest bg-gray-900 py-3 md:py-4 rounded whitespace-nowrap px-4">
+                    R<sub>tot</sub> = R<sub>y</sub>(&theta;) &middot; R<sub>z</sub>(&psi;) &middot; R<sub>x</sub>(&phi;)
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">3. The Elementary Rotation Matrices</h3>
+            <p class="mb-4 text-sm md:text-base leading-relaxed">Before compounding the deformities, we define the fundamental 3D rotation matrices in their standard trigonometric form. Each matrix revolves the coordinate space around one of its fixed principal axes by a given angle, utilising the cosine (<strong class="font-mono">cos</strong>) and sine (<strong class="font-mono">sin</strong>) functions:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 mb-8 overflow-x-auto">
+                <div class="flex flex-col items-center text-sm md:text-base">
+                    <span class="mb-2 font-mono text-red-300 font-bold">R<sub>x</sub>(&phi;) - Global X</span>
+                    <div class="math-matrix bg-gray-800 rounded p-2">
+                        <div class="matrix-grid whitespace-nowrap">
+                            <span>1</span><span>0</span><span>0</span>
+                            <span>0</span><span>cos(&phi;)</span><span>-sin(&phi;)</span>
+                            <span>0</span><span>sin(&phi;)</span><span>cos(&phi;)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center text-sm md:text-base">
+                    <span class="mb-2 font-mono text-blue-300 font-bold">R<sub>z</sub>(&psi;) - Global Z</span>
+                    <div class="math-matrix bg-gray-800 rounded p-2">
+                        <div class="matrix-grid whitespace-nowrap">
+                            <span>cos(&psi;)</span><span>-sin(&psi;)</span><span>0</span>
+                            <span>sin(&psi;)</span><span>cos(&psi;)</span><span>0</span>
+                            <span>0</span><span>0</span><span>1</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center text-sm md:text-base">
+                    <span class="mb-2 font-mono text-green-300 font-bold">R<sub>y</sub>(&theta;) - Global Y</span>
+                    <div class="math-matrix bg-gray-800 rounded p-2">
+                        <div class="matrix-grid whitespace-nowrap">
+                            <span>cos(&theta;)</span><span>0</span><span>sin(&theta;)</span>
+                            <span>0</span><span>1</span><span>0</span>
+                            <span>-sin(&theta;)</span><span>0</span><span>cos(&theta;)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">4. Step-by-Step Mathematical Example</h3>
+            <p class="mb-4 md:mb-6 text-sm md:text-base leading-relaxed">Consider a limb deformed through an Extrinsic Global Sequence (Global X &rarr; Global Z &rarr; Global Y): <strong>15&deg; Global Procurvatum (&phi;)</strong>, <strong>15&deg; Global Valgus (&psi;)</strong>, and <strong>-20&deg; Global External Torsion (&theta;)</strong>. Inserting these angles into the trigonometric matrices defined above, we generate the individual numerical rotational matrices:</p>
+            
+            <div class="flex flex-col md:flex-row flex-wrap items-center justify-center gap-6 md:gap-8 mb-8">
+                <div class="flex flex-col items-center text-sm md:text-base">
+                    <span class="mb-2 font-mono text-green-300 font-bold">R<sub>y</sub>(-20&deg;)</span>
+                    <div class="math-matrix bg-gray-800 rounded p-2">
+                        <div class="matrix-grid">
+                            <span>0.940</span><span>0.000</span><span>-0.342</span>
+                            <span>0.000</span><span>1.000</span><span>0.000</span>
+                            <span>0.342</span><span>0.000</span><span>0.940</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center text-sm md:text-base">
+                    <span class="mb-2 font-mono text-blue-300 font-bold">R<sub>z</sub>(15&deg;)</span>
+                    <div class="math-matrix bg-gray-800 rounded p-2">
+                        <div class="matrix-grid">
+                            <span>0.966</span><span>-0.259</span><span>0.000</span>
+                            <span>0.259</span><span>0.966</span><span>0.000</span>
+                            <span>0.000</span><span>0.000</span><span>1.000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center text-sm md:text-base">
+                    <span class="mb-2 font-mono text-red-300 font-bold">R<sub>x</sub>(15&deg;)</span>
+                    <div class="math-matrix bg-gray-800 rounded p-2">
+                        <div class="matrix-grid">
+                            <span>1.000</span><span>0.000</span><span>0.000</span>
+                            <span>0.000</span><span>0.966</span><span>-0.259</span>
+                            <span>0.000</span><span>0.259</span><span>0.966</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center mb-6">
+                <span class="mb-3 font-bold text-gray-200 text-base md:text-lg">Pre-Multiplying yields Total Rotation Matrix (R<sub>tot</sub>)</span>
+                <div class="math-matrix bg-gray-800 rounded text-indigo-300 p-3 md:p-4 text-base md:text-xl">
+                    <div class="matrix-grid">
+                        <span>0.908</span><span>-0.323</span><span>-0.267</span>
+                        <span>0.259</span><span>0.933</span><span>-0.250</span>
+                        <span>0.330</span><span>0.158</span><span>0.931</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">5. Calculating Clinical Projections (The "Shadows")</h3>
+            <p class="mb-4 text-sm md:text-base leading-relaxed">Traditional radiographs cast shadows onto the flat walls and floor of the room. To find what a 2D radiograph "sees," we apply R<sub>tot</sub> to the reference vectors to derive the actual spatial orientation.</p>
+
+            <div class="space-y-4 md:space-y-6">
+                <div class="bg-gray-800/60 p-4 md:p-6 rounded-lg border border-gray-700 overflow-x-auto">
+                    <h4 class="font-bold text-blue-300 mb-3 md:mb-4 text-base md:text-xl">5.1 The Frontal Plane Projection Angle</h4>
+                    <p class="text-sm md:text-base mb-3 md:mb-4">We find the actual distal axis <strong>v</strong> by applying R<sub>tot</sub> to <strong>u</strong>:</p>
+                    <div class="text-center font-mono text-gray-300 mb-3 md:mb-4 text-sm md:text-lg bg-gray-900 py-3 rounded flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 px-2">
+                        <span><strong>v</strong> = R<sub>tot</sub> &middot; <strong>u</strong> =</span>
+                        <div class="math-matrix bg-gray-800 rounded p-2 text-xs md:text-sm">
+                            <div class="grid grid-cols-1 gap-1 md:gap-2 text-center">
+                                <span>0.323</span><span>-0.933</span><span>-0.158</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm md:text-base mb-3 md:mb-4">Using the <code class="text-indigo-300 bg-gray-900 px-2 py-1 rounded text-xs md:text-sm">atan2</code> function on the x and y components of <strong>v</strong>:</p>
+                    <div class="text-center font-mono text-blue-300 text-sm md:text-xl bg-gray-900 py-3 rounded px-2 whitespace-nowrap">Angle<sub>Frontal</sub> = atan2(0.323, 0.933) &approx; 19.1&deg; Projected Valgus</div>
+                </div>
+
+                <div class="bg-gray-800/60 p-4 md:p-6 rounded-lg border border-gray-700 overflow-x-auto">
+                    <h4 class="font-bold text-green-300 mb-3 md:mb-4 text-base md:text-xl">5.2 The Floor Projection Angle (Transverse Plane)</h4>
+                    <p class="text-sm md:text-base mb-3 md:mb-4">Apply R<sub>tot</sub> to the reference medio-lateral axis <strong>x<sub>ref</sub></strong>, and project it onto the floor (the Global Transverse Plane). When a surgeon looks at the bone from top to bottom, this is what they see:</p>
+                    <div class="text-center font-mono text-gray-300 mb-3 md:mb-4 text-sm md:text-lg bg-gray-900 py-3 rounded flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 px-2">
+                        <span><strong>x<sub>new</sub></strong> = R<sub>tot</sub> &middot; <strong>x<sub>ref</sub></strong> =</span>
+                        <div class="math-matrix bg-gray-800 rounded p-2 text-xs md:text-sm">
+                            <div class="grid grid-cols-1 gap-1 md:gap-2 text-center">
+                                <span>0.908</span><span>0.259</span><span>0.330</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center font-mono text-green-300 text-sm md:text-xl bg-gray-900 py-3 rounded px-2 whitespace-nowrap">Total Proj. Torsion (b) = atan2(0.330, 0.908) &approx; 20.0&deg; Projected Ext Torsion</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">6. Geometric Correction: Euler's Theorem and &Theta;</h3>
+            <p class="mb-4 md:mb-6 text-sm md:text-base leading-relaxed">The most robust clarification of our study is the reduction of these complex inductions into a single <strong>Axis-Angle (Single Cut)</strong> correction. Euler's Rotation Theorem proves that any complex rigid-body displacement with a fixed point can be expressed as a singular rotation around a unique axis.</p>
+            <p class="mb-4 md:mb-6 text-sm md:text-base leading-relaxed">The SO(3) group—standing for the <strong>Special Orthogonal</strong> group in three dimensions—is the mathematical set encompassing all possible valid spatial rotations around a fixed origin. For a transformation matrix to physically represent a rigid bone segment, it must satisfy two strict properties inherent to this group:</p>
+            <ul class="list-disc pl-6 mb-6 text-sm md:text-base text-gray-300 space-y-2">
+                <li><strong>It must be Orthogonal (O):</strong> Mathematically, a matrix R is orthogonal if its transpose is equal to its inverse (R<sup>T</sup> = R<sup>-1</sup>, and thus R<sup>T</sup> R = I). Clinically, this property ensures that the transformation is a perfect isometry; it rigidly preserves the absolute lengths of vectors and the angles between them. The bone is neither stretched, compressed, nor sheared during the calculation.</li>
+                <li><strong>It must be "Special" (Determinant of +1):</strong> Because an orthogonal matrix preserves scale, its determinant mathematically can only ever be +1 or -1. A determinant of -1 indicates an <em>improper</em> rotation—a transformation that includes a reflection across a plane, which would physically invert the anatomy. By restricting the group to "Special" matrices with a determinant of strictly +1, we ensure the transformation preserves chirality (handedness) and represents a physically possible, pure rotation in 3D space.</li>
+            </ul>
+
+            <div class="grid grid-cols-1 gap-6 md:gap-8 mt-6 md:mt-8">
+                <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-gray-700">
+                    <h4 class="font-bold text-purple-400 mb-3 md:mb-4 text-base md:text-xl">6.1 Absolute Magnitude (&Theta;)</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">To find the absolute magnitude of this single rotation, we rely on the <strong>Trace</strong> (the sum of the diagonal elements) of our total rotation matrix R<sub>tot</sub>.</p>
+                    <div class="text-center font-mono text-sm md:text-lg text-indigo-300 mb-4 md:mb-6 bg-gray-900 py-4 md:py-6 rounded overflow-x-auto px-2 whitespace-nowrap">
+                        Tr(R<sub>tot</sub>) = R<sub>11</sub> + R<sub>22</sub> + R<sub>33</sub> = 1 + 2cos(&Theta;)<br><br>
+                        &Theta; = arccos<left>(</left><div class="math-fraction"><span class="numerator">Tr(R<sub>tot</sub>) - 1</span><span class="denominator">2</span></div><right>)</right>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-gray-700 overflow-x-auto">
+                    <h4 class="font-bold text-yellow-400 mb-3 md:mb-4 text-base md:text-xl">6.2 Deriving the Rotational Axis (<b>u</b><sub>rot</sub>)</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">To find the unique axis of rotation in 3D space, we must extract the anti-symmetric components of R<sub>tot</sub>.</p>
+                    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-8 font-mono text-sm md:text-lg text-yellow-200 mb-4 bg-gray-900 py-4 md:py-6 rounded px-2">
+                        <div class="whitespace-nowrap">u<sub>x</sub> = <div class="math-fraction"><span class="numerator">R<sub>32</sub> - R<sub>23</sub></span><span class="denominator">2 sin(&Theta;)</span></div> &approx; 0.440</div>
+                        <div class="whitespace-nowrap">u<sub>y</sub> = <div class="math-fraction"><span class="numerator">R<sub>13</sub> - R<sub>31</sub></span><span class="denominator">2 sin(&Theta;)</span></div> &approx; -0.644</div>
+                        <div class="whitespace-nowrap">u<sub>z</sub> = <div class="math-fraction"><span class="numerator">R<sub>21</sub> - R<sub>12</sub></span><span class="denominator">2 sin(&Theta;)</span></div> &approx; 0.628</div>
+                    </div>
+                    <p class="text-sm md:text-base text-gray-400 mt-4">By rotating the bone by exactly -&Theta; around <strong>u<sub>rot</sub></strong>, the surgeon corrects procurvatum, valgus, and torsion in one mathematically precise gesture.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">7. Deriving the Wedge Axis (<b>n</b><sub>wedge</sub>) and Rodrigues' Formula</h3>
+            <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-gray-700">
+                <p class="text-sm md:text-base text-gray-300 mb-4">While <b>u</b><sub>rot</sub> untwists the entire 3D displacement, a closing wedge osteotomy only corrects the angulation between the proximal and distal anatomical axes.</p>
+                <p class="text-sm md:text-base text-gray-300 mb-4">The true spatial trajectory of the distal segment is represented by <b>v</b> = R<sub>tot</sub> &middot; <b>u</b>. The absolute magnitude of this angulation (the wedge angle) is found via the dot product:</p>
+                <div class="text-center font-mono text-sm md:text-lg text-amber-400 mb-4 md:mb-6 bg-gray-900 py-3 md:py-4 rounded">
+                    &theta;<sub>w</sub> = arccos(<b>u</b> &middot; <b>v</b>)
+                </div>
+                <p class="text-sm md:text-base text-gray-300 mb-4">The axis of rotation required to close this wedge is the vector perpendicular to the plane of maximum deformity (the plane containing both <b>u</b> and <b>v</b>). We find this using the cross product:</p>
+                <div class="text-center font-mono text-sm md:text-lg text-cyan-400 mb-4 md:mb-6 bg-gray-900 py-3 md:py-4 rounded">
+                    <b>n</b><sub>wedge</sub> = (<b>u</b> &times; <b>v</b>) / ||<b>u</b> &times; <b>v</b>||
+                </div>
+            </div>
+
+            <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-gray-700 mt-6">
+                <h4 class="font-bold text-indigo-300 mb-3 md:mb-4 text-base md:text-xl">7.1 Simulating the Wedge Closure</h4>
+                <p class="text-sm md:text-base text-gray-300 mb-4">To explicitly calculate the intrinsic torsion that remains after the wedge is physically closed, we mathematically simulate the osteotomy.</p>
+                <p class="text-sm md:text-base text-gray-300 mb-4">First, we construct the rotation matrix <strong class="font-mono">R<sub>close</sub></strong> that rotates the distal segment around the <strong class="font-mono">n<sub>wedge</sub></strong> axis by <strong class="font-mono">-&theta;<sub>w</sub></strong>. This is generated using <strong>Rodrigues' Rotation Formula</strong>, where <strong class="font-mono">I</strong> is the identity matrix and <strong class="font-mono">K</strong> is the skew-symmetric cross-product matrix of <strong class="font-mono">n<sub>wedge</sub></strong>:</p>
+                <div class="text-center font-mono text-sm md:text-lg text-cyan-400 mb-4 md:mb-6 bg-gray-900 py-3 md:py-4 rounded">
+                    R<sub>close</sub> = I + sin(-&theta;<sub>w</sub>) K + (1 - cos(-&theta;<sub>w</sub>)) K<sup>2</sup>
+                </div>
+                <p class="text-sm md:text-base text-gray-300 mb-4">We apply this corrective rotation to our totally deformed bone matrix to find the final, post-wedge position of the bone:</p>
+                <div class="text-center font-mono text-sm md:text-lg text-white mb-4 md:mb-6 bg-gray-900 py-3 md:py-4 rounded">
+                    R<sub>final</sub> = R<sub>close</sub> &middot; R<sub>tot</sub>
+                </div>
+                <p class="text-sm md:text-base text-gray-300 mb-4">In this new <strong class="font-mono">R<sub>final</sub></strong> state, the angulation is completely corrected, and the bone's longitudinal axis is perfectly re-aligned with the proximal baseline (<strong class="font-mono">u</strong>).</p>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">8. Codman's Paradox & The Modern Twist Breakdown</h3>
+            <p class="mb-4 text-sm md:text-base leading-relaxed">Because matrix multiplication is non-commutative, navigating a bone through multiple planes forces an implicit geometric twist. We must isolate the surgeon's commanded torsion from this geometric anomaly.</p>
+            <ol class="space-y-4 list-decimal pl-6 marker:text-indigo-400 mb-6 text-sm md:text-base text-gray-300">
+                <li><strong>CT-Measured Twist:</strong> The true intrinsic torsion present inside the bone. This is calculated by taking R<sub>final</sub> (derived via Rodrigues' formula) and finding the angular deviation between the original medial-lateral axis (x<sub>ref</sub>) and the new medial-lateral axis (x<sub>final</sub>).</li>
+                <li><strong>Codman-Induced Twist:</strong> The baseline torsion inherently forced by the geometric sequence. It is calculated by running the exact same simulation but explicitly locking the intrinsic commanded torsion (&theta;) to 0&deg;.</li>
+                <li><strong>&theta;-Induced Twist:</strong> The specific twist manually requested by the user, mathematically defined as: <code class="bg-gray-800 text-pink-300 px-2 py-1 rounded">CT-Measured - Codman-Induced</code>.</li>
+            </ol>
+
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 mt-6">
+                <h4 class="font-bold text-blue-300 mb-3 text-base md:text-xl">Extracting Directional Twist: The atan2 Solution</h4>
+                <p class="text-sm md:text-base text-gray-300 mb-4">Whether calculating the orthographic "Projected Twist" on the floor or extracting the "CT-Measured Twist", we must distinguish between <em>internal</em> and <em>external</em> torsion. A simple dot product (arccos) strips away the clinical direction. To resolve this, we use a 3D trigonometric projection that calculates both the sine and cosine to establish the exact signed quadrant.</p>
+                
+                <ul class="text-xs md:text-sm text-gray-300 list-disc pl-5 space-y-3 mb-6 mt-4">
+                    <li><strong>The Cosine (Dot Product):</strong> The geometric formula for the dot product is <b>A &middot; B = |A| &times; |B| &times; cos(&theta;)</b>. Because both vectors are unit vectors, the result simplifies to <strong class="font-mono text-white">cos(&theta;)</strong>.</li>
+                    <li><strong>The Sine (Cross Product):</strong> The magnitude of a cross product evaluates to <strong class="font-mono text-white">sin(&theta;)</strong>.</li>
+                    <li><strong>The Directional Referee (-u):</strong> Because our longitudinal axis <strong class="text-white">u</strong> points <em>downwards</em>, an External Rotation creates an <em>upward</em> cross product. Dotting this upward vector with our downward <strong class="text-white">u</strong> natively yields a negative angle. By dotting the cross product with the <em>upward</em> normal vector <strong class="text-white">-u</strong>, we maintain the clinical convention that <strong>External Rotation is Positive</strong>.</li>
+                </ul>
+                
+                <div class="text-center font-mono text-sm md:text-lg text-purple-400 mb-4 bg-gray-800 py-3 md:py-4 rounded border border-gray-700 shadow-inner">
+                    Twist = atan2( (x<sub>ref</sub> &times; x<sub>final</sub>) &middot; (-u), x<sub>ref</sub> &middot; x<sub>final</sub> )
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="text-lg md:text-2xl font-bold text-pink-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">9. The Optical Illusion: The 4D Camera Pipeline</h3>
+            <p class="mb-4 text-sm md:text-base leading-relaxed text-gray-300">It is geometrically invalid to measure clinical angles visually on a 2D monitor using 3D rendering software unless the camera is perfectly orthogonal. Standard software mimics the human eye using a <strong>Perspective Matrix</strong>, which injects false torsion into visual measurements.</p>
+
+            <div class="space-y-6">
+                <div class="bg-gray-800/60 p-5 md:p-8 rounded-lg border border-gray-700 shadow-md">
+                    <h4 class="font-bold text-white mb-3 md:mb-4 text-base md:text-xl">9.1 Homogeneous Coordinates (The 4th Dimension)</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">To mathematically map 3D space onto a 2D screen, we must perform translations (moving the camera). However, standard 3x3 matrices can only rotate and scale objects. To solve this, we append a 4th dimension, <strong>W = 1</strong>, allowing us to use 4x4 matrices while remaining mathematically reversible.</p>
+                    
+                    <div class="bg-gray-900 p-4 rounded border border-gray-700 font-mono text-sm text-gray-300 overflow-x-auto mb-4">
+                        <div><strong>Deriving the Distal Face Coordinates (15&deg; / 15&deg; / -20&deg;):</strong></div>
+                        <div class="mt-2 text-xs md:text-sm text-gray-400">Assuming a bone length of 12, we multiply the initial vectors by our previously calculated Extrinsic R<sub>tot</sub> and append W=1.</div>
+                        <div class="mt-4 mb-4 text-cyan-300">C<sub>d</sub> = R<sub>tot</sub> &middot; [0, -6, 0]<sup>T</sup> &approx; <span class="text-white bg-gray-800 px-2 py-1 rounded">[ 1.941, -5.598, -0.946, 1 ]</span></div>
+                        <div class="text-cyan-300">E<sub>d</sub> = R<sub>tot</sub> &middot; [1, -6, 0]<sup>T</sup> &approx; <span class="text-white bg-gray-800 px-2 py-1 rounded">[ 2.848, -5.339, -0.616, 1 ]</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/60 p-5 md:p-8 rounded-lg border border-gray-700 shadow-md">
+                    <h4 class="font-bold text-white mb-3 md:mb-4 text-base md:text-xl">9.2 Step A: The View Matrix (V)</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">The View Matrix mathematically translates and rotates the entire world so the camera lens acts as the absolute origin (0,0,0) looking straight down the -Z axis. If we position our virtual camera exactly overhead at <strong>(0, 30, 0)</strong> looking at the origin, the resulting 4x4 matrix is:</p>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-6 mb-6 overflow-x-auto">
+                        <div class="math-matrix bg-gray-900 rounded p-3 text-indigo-300 text-sm md:text-base">
+                            <div class="matrix-grid" style="grid-template-columns: repeat(4, 1fr);">
+                                <span>1.0</span><span>0.0</span><span>0.0</span><span>0.0</span>
+                                <span>0.0</span><span>0.0</span><span>-1.0</span><span>0.0</span>
+                                <span>0.0</span><span>1.0</span><span>0.0</span><span>-30.0</span>
+                                <span>0.0</span><span>0.0</span><span>0.0</span><span>1.0</span>
+                            </div>
+                        </div>
+                        <div class="font-mono text-sm text-gray-400">
+                            <div class="mb-2"><strong>C<sub>d_view</sub></strong> = V &middot; C<sub>d</sub></div>
+                            <div class="text-indigo-200 bg-gray-900 px-2 py-1 rounded mb-4">[ 1.941, 0.946, -35.598, 1 ]</div>
+                            <div class="mb-2"><strong>E<sub>d_view</sub></strong> = V &middot; E<sub>d</sub></div>
+                            <div class="text-indigo-200 bg-gray-900 px-2 py-1 rounded">[ 2.848, 0.616, -35.339, 1 ]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-pink-500/50 shadow-md">
+                    <h4 class="font-bold text-white mb-3 md:mb-4 text-base md:text-xl">9.3 Step B: The Projection Matrix (P) & Clip Space</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">This matrix prepares the geometry for the monitor. It uses the Field of View (e.g., 45&deg;) to crush the 3D space into a 4-dimensional array called <strong>Clip Space</strong>. The brilliant trick of this matrix is that it copies the spatial depth (the Z-distance from the lens) and stores it into the <strong>W coordinate</strong>.</p>
+                    
+                    <div class="flex flex-col xl:flex-row items-center gap-6 mb-6 overflow-x-auto">
+                        <div class="math-matrix bg-gray-900 rounded p-3 text-pink-300 text-sm md:text-base">
+                            <div class="matrix-grid" style="grid-template-columns: repeat(4, 1fr);">
+                                <span>2.414</span><span>0.0</span><span>0.0</span><span>0.0</span>
+                                <span>0.0</span><span>2.414</span><span>0.0</span><span>0.0</span>
+                                <span>0.0</span><span>0.0</span><span>-1.002</span><span>-0.2</span>
+                                <span>0.0</span><span>0.0</span><span>-1.0</span><span>0.0</span>
+                            </div>
+                        </div>
+                        <div class="font-mono text-xs md:text-sm text-gray-400">
+                            <div class="mb-2"><strong>C<sub>d_clip</sub></strong> = P &middot; C<sub>d_view</sub></div>
+                            <div class="text-pink-200 bg-gray-900 px-2 py-1 rounded mb-4">[ 4.685, 2.284, 35.469, <strong>35.598</strong> ]</div>
+                            <div class="mb-2"><strong>E<sub>d_clip</sub></strong> = P &middot; E<sub>d_view</sub></div>
+                            <div class="text-pink-200 bg-gray-900 px-2 py-1 rounded">[ 6.876, 1.487, 35.210, <strong>35.339</strong> ]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-red-500/50 shadow-md">
+                    <h4 class="font-bold text-white mb-3 md:mb-4 text-base md:text-xl">9.4 The Perspective Divide (The Irreversible Step)</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">Up until now, the 4D matrices are completely reversible. The <strong>Perspective Divide</strong> is where the true flattening (and the illusion) occurs. The graphics engine divides the X, Y, and Z coordinates by the W depth coordinate to crush the geometry into 2D Normalised Device Coordinates (NDC).</p>
+                    <div class="text-center font-mono text-sm md:text-lg text-red-300 mb-4 bg-gray-900 py-4 rounded border border-gray-700">
+                        X<sub>ndc</sub> = <div class="inline-flex flex-col align-middle mx-2 text-center leading-none"><span class="border-b border-red-300 pb-1 mb-1">X<sub>clip</sub></span><span>W<sub>clip</sub></span></div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        Y<sub>ndc</sub> = <div class="inline-flex flex-col align-middle mx-2 text-center leading-none"><span class="border-b border-red-300 pb-1 mb-1">Y<sub>clip</sub></span><span>W<sub>clip</sub></span></div>
+                    </div>
+                    <div class="font-mono text-sm md:text-base text-gray-300 mb-6 bg-gray-900 py-4 rounded px-4 border border-gray-700">
+                        <div><strong>C<sub>d_ndc</sub></strong> = (4.685 / 35.598, &nbsp;2.284 / 35.598) &approx; <span class="text-white font-bold"> (0.132, 0.064)</span></div>
+                        <div class="mt-2"><strong>E<sub>d_ndc</sub></strong> = (6.876 / 35.339, &nbsp;1.487 / 35.339) &approx; <span class="text-white font-bold"> (0.195, 0.042)</span></div>
+                    </div>
+                    <p class="text-sm md:text-base text-gray-300 font-semibold border-l-4 border-red-500 pl-4 mb-4">
+                        The Illusion: Because the camera is at Y=30, the proximal cap is closer to the lens (W=24) than the distal cap (W &approx; 35.6). Dividing the distal coordinates by a larger depth value violently shrinks and warps the distal red line out of parallel alignment, simulating visual depth.
+                    </p>
+                </div>
+
+                <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-gray-700 shadow-md">
+                    <h4 class="font-bold text-white mb-3 md:mb-4 text-base md:text-xl">9.5 Calculating the Final Screen Angle</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">We now treat the red lines as flat 2D vectors directly on the glass of the monitor:</p>
+                    <div class="flex flex-col gap-3 font-mono text-sm md:text-base text-gray-300 mb-6 bg-gray-900 py-4 rounded px-4 border border-gray-700">
+                        <div>v<sub>proximal</sub> = E<sub>p_ndc</sub> - C<sub>p_ndc</sub> &approx; (0.101, 0.0)</div>
+                        <div>v<sub>distal</sub> = E<sub>d_ndc</sub> - C<sub>d_ndc</sub> &approx; (0.063, -0.022)</div>
+                    </div>
+                    
+                    <p class="text-sm md:text-base text-gray-300 mb-4">Applying the 2D atan2 function reveals the <strong>Apparent Screen Angle</strong> (the exact value a plastic protractor placed against the screen would measure):</p>
+                    <div class="text-center font-mono text-sm md:text-lg text-white mb-4 bg-gray-900 py-3 md:py-4 rounded border border-gray-700">
+                        Screen Angle = |atan2(-0.022, 0.063) - atan2(0, 0.101)| &approx; <strong>19.3&deg;</strong>
+                    </div>
+                    <p class="text-sm md:text-base text-gray-300 mt-4 border-l-4 border-indigo-500 pl-4 py-2 bg-gray-900/50">
+                        <strong>Conclusion:</strong> In Section 5.2, we proved the True Orthographic Projected Twist on the floor is mathematically <strong>20.0&deg;</strong>. Yet, simply because we viewed the 3D model through a virtual camera lens overhead, the on-screen protractor reads <strong>19.3&deg;</strong>. The 0.7&deg; discrepancy is the <strong>Camera Error</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gray-800/90 p-5 md:p-8 rounded-lg border border-pink-500 shadow-lg mt-8 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-pink-500 to-amber-500"></div>
+                <h4 class="font-bold text-white mb-3 md:mb-4 text-lg md:text-xl flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    9.6 Interactive Proof: The Dual-Viewport Perspective Simulator
+                </h4>
+                <p class="text-sm md:text-base text-gray-300 mb-6 leading-relaxed">Adjust the camera coordinates below. The <strong>Top View</strong> shows the physical room, highlighting the 90&deg; corner and your moving camera lens. The <strong>Monitor View</strong> shows exactly what that lens sees. Note how moving the camera away from the `(0, Y, 0)` orthogonal centre physically crushes the 90&deg; corner into a false obtuse angle on the screen.</p>
+                
+                <div class="flex flex-col gap-4 mb-6 bg-gray-900 p-4 rounded border border-gray-700">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-red-400 uppercase tracking-wider mb-1 block">Camera X (Lateral)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sim-cam-x" min="-30" max="30" value="-7" class="w-full accent-red-500">
+                                <span id="val-cam-x" class="text-sm font-mono text-white w-8 text-right">-7</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-green-400 uppercase tracking-wider mb-1 block">Camera Y (Height)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sim-cam-y" min="2" max="40" value="15" class="w-full accent-green-500">
+                                <span id="val-cam-y" class="text-sm font-mono text-white w-8 text-right">15</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1 block">Camera Z (Anterior)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sim-cam-z" min="-30" max="30" value="15" class="w-full accent-blue-500">
+                                <span id="val-cam-z" class="text-sm font-mono text-white w-8 text-right">15</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-800 p-3 rounded border border-gray-600 mt-2">
+                        <span class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 sm:mb-0">Lens Type</span>
+                        <div class="flex space-x-6 text-sm">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="sim-lens" value="perspective" checked class="mr-2 accent-pink-500">
+                                <span class="text-white font-semibold">Perspective (Human Eye)</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="sim-lens" value="orthographic" class="mr-2 accent-indigo-500">
+                                <span class="text-gray-400 font-semibold label-ortho-text">Orthographic (Parallel)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <div class="relative w-full h-56 md:h-72 bg-gray-950 rounded-lg border-2 border-gray-700 overflow-hidden shadow-inner">
+                        <div class="absolute top-3 left-3 bg-gray-900/90 backdrop-blur border border-gray-600 px-3 py-1.5 rounded text-xs font-bold text-gray-200 z-10 shadow-lg">THE ROOM (Top-Down Isometric)</div>
+                        <div class="absolute top-3 right-3 bg-gray-900/80 px-2 py-1 rounded text-[10px] text-gray-400 z-10">Left-Click & Drag to Orbit</div>
+                        <div id="persp-room-canvas" class="w-full h-full"></div>
+                    </div>
+
+                    <div class="relative w-full h-56 md:h-72 bg-gray-950 rounded-lg border-2 border-pink-500/50 overflow-hidden shadow-[0_0_15px_rgba(236,72,153,0.15)]">
+                        <div class="absolute top-3 left-3 bg-pink-900/90 backdrop-blur border border-pink-500 px-3 py-1.5 rounded text-xs font-bold text-white z-10 shadow-lg">THE MONITOR (Live Lens Feed)</div>
+                        <div class="absolute top-3 right-3 bg-gray-900/90 border border-gray-600 px-3 py-2 rounded shadow-lg z-10 text-right">
+                            <div class="text-xs text-gray-400 mb-1">True 3D Angle: <span class="text-white font-mono">90.0&deg;</span></div>
+                            <div class="text-sm font-bold text-pink-400">Apparent Angle: <span id="persp-angle-readout" class="font-mono text-lg text-white">90.0&deg;</span></div>
+                        </div>
+                        <div id="persp-monitor-canvas" class="w-full h-full"></div>
+                        
+                        <svg id="persp-overlay-svg" class="absolute inset-0 w-full h-full pointer-events-none z-20 drop-shadow-md">
+                            <path id="persp-svg-arc" fill="rgba(236, 72, 153, 0.2)" stroke="#ec4899" stroke-width="2"/>
+                            <line id="persp-svg-lineX" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <line id="persp-svg-lineZ" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">10. The Clinical Barrier & Conclusion</h3>
+            <p class="text-sm md:text-lg text-gray-300 leading-relaxed bg-gray-800 p-5 md:p-8 rounded-lg border-l-4 border-indigo-500 shadow-md mb-6">
+                While the mathematics are robust, they cannot be safely performed with visual protractors or standard DICOM viewers. 2D MPR slices succumb to out-of-plane projection errors, and 3D viewers succumb to perspective camera distortion. To apply this logic safely, CT data must be imported into <strong>CAD software</strong> where bone segments are treated strictly as <strong>independent rigid bodies</strong> relying purely on matrix algebra.
+            </p>
+            <p class="text-sm md:text-lg text-gray-300 leading-relaxed">
+                By transitioning from trigonometric shadows to spatial transformations, we resolve the "cross-talk" errors that have historically complicated deformity analysis. Accurate quantification requires 3D rigid-body analysis, resolving multiple planes into a singular, mathematically precise axis of correction.
+            </p>
+        </section>
+
+        <!-- SECTION 11: KINEMATIC INVERSION -->
+            <section class="mb-16 mt-16 pt-8 border-t-2 border-indigo-500/50">
+                <div class="flex items-center gap-3 mb-6">
+                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-8 w-8 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <h3 class="text-lg md:text-2xl font-bold text-amber-400">11. Mathematical Proof of the MPR Methodology (Kinematic Inversion)</h3>
+                </div>
+                <p class="mb-4 text-sm md:text-base leading-relaxed text-gray-300">Clinicians frequently measure intrinsic torsion in CAD software or an MPR (Multiplanar Reconstruction) viewer by establishing a proximal reference line on the screen, rotating the 3D volume to view the distal bone straight-on, and measuring the angle against a distal reference line. We must mathematically prove that this visual "Glass Screen" technique is identical to the surgical Closing Wedge Osteotomy.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-6">
+                    <div class="bg-gray-800/50 rounded p-5 md:p-8 border border-gray-700">
+                        <h4 class="font-bold text-indigo-300 mb-3 text-base md:text-xl">11.1 Method A: The Surgical Wedge</h4>
+                        <p class="text-sm md:text-base text-gray-300 mb-4">In surgery, the proximal bone is clamped to the table. The distal segment (<strong class="font-mono text-white">v</strong>) is physically hinged back to align with the proximal segment (<strong class="font-mono text-white">u</strong>). The required rotational matrix is <strong class="font-mono text-white">R<sub>close</sub></strong>.</p>
+                        <div class="text-center font-mono text-sm md:text-base text-gray-300 bg-gray-900 py-3 rounded mb-4">
+                            v<sub>aligned</sub> = R<sub>close</sub> &middot; v = u
+                        </div>
+                        <p class="text-sm md:text-base text-gray-300">The total intrinsic twist is the angle measured between the original proximal reference (<strong class="font-mono text-white">x<sub>ref</sub></strong>) and the newly aligned distal reference (<strong class="font-mono text-white">R<sub>close</sub> &middot; x<sub>final</sub></strong>).</p>
+                    </div>
+
+                    <div class="bg-gray-800/50 rounded p-5 md:p-8 border border-gray-700">
+                        <h4 class="font-bold text-pink-300 mb-3 text-base md:text-xl">11.2 Method B: The MPR Glass Screen</h4>
+                        <p class="text-sm md:text-base text-gray-300 mb-4">In MPR, the proximal reference <strong class="font-mono text-white">x<sub>ref</sub></strong> is drawn and frozen on the monitor "glass." The user then rotates the <em>entire 3D CT volume</em> (matrix <strong class="font-mono text-white">R<sub>vol</sub></strong>) until the distal segment looks straight into the camera (which is the <strong class="font-mono text-white">u</strong> axis).</p>
+                        <div class="text-center font-mono text-sm md:text-base text-gray-300 bg-gray-900 py-3 rounded mb-4">
+                            R<sub>vol</sub> &middot; v = u
+                        </div>
+                        <p class="text-sm md:text-base text-gray-300">Because <strong class="font-mono text-white">R<sub>vol</sub></strong> follows the exact same shortest-path arc to map <strong class="font-mono text-white">v</strong> to <strong class="font-mono text-white">u</strong>, <strong>R<sub>vol</sub> is mathematically identical to R<sub>close</sub></strong>.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/80 p-5 md:p-8 rounded-lg border border-amber-500/50 shadow-md mt-6">
+                    <h4 class="font-bold text-white mb-3 text-base md:text-xl">11.3 Numerical Case Example: The Identity Proof</h4>
+                    <p class="text-sm md:text-base text-gray-300 mb-4">Consider a deformity comprising a <strong>40&deg; Wedge Angulation</strong> and exactly <strong>25.0&deg; Total Intrinsic Twist</strong>. We apply the MPR methodology to extract the twist.</p>
+                    <ul class="space-y-4 list-decimal pl-6 marker:text-amber-400 mb-6 text-sm md:text-base text-gray-300">
+                        <li>The camera looks down the proximal bone. The proximal line is stamped on the glass: <strong class="font-mono text-white">x<sub>glass</sub> = [1, 0, 0]</strong>.</li>
+                        <li>Because of the severe 40&deg; angulation, viewing the distal line through the depth of the bone creates a false optical projection. A 2D measurement on the screen reads <strong>53.8&deg; (The Projected Twist)</strong>.</li>
+                        <li>The clinician applies <strong class="font-mono text-white">R<sub>vol</sub></strong>, rotating the entire CT volume by 40&deg; to point the distal bone straight at the camera.</li>
+                        <li>The distal line is subjected to this rotation: <strong class="font-mono text-cyan-300">x<sub>new</sub> = R<sub>vol</sub> &middot; x<sub>final</sub></strong>.</li>
+                    </ul>
+                    <p class="text-sm md:text-base text-gray-300 mb-4 border-l-4 border-amber-500 pl-4 py-2 bg-gray-900/50">
+                        <strong>The Conclusion:</strong> Measuring the angle between the frozen line on the glass (<strong class="font-mono text-white">x<sub>glass</sub></strong>) and the rotated distal line (<strong class="font-mono text-cyan-300">x<sub>new</sub></strong>) yields exactly <strong>25.0&deg;</strong>. The Kinematic Inversion proves that rotating a volume behind a fixed screen is mathematically indistinguishable from surgically bending a bone.
+                    </p>
+                </div>
+
+                <!-- 11.4 INTERACTIVE MPR SIMULATOR -->
+                <div class="bg-[#0f1115] p-5 md:p-8 rounded-xl border border-gray-800 shadow-2xl mt-8 mb-6 relative overflow-hidden">
+                    <h4 class="font-bold text-white mb-3 md:mb-4 text-lg md:text-xl flex items-center">
+                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-6 w-6 mr-2 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        11.4 Interactive Proof: MPR Distal Alignment Simulator
+                    </h4>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <div class="w-full md:w-1/3">
+                            <label class="text-sm font-semibold text-gray-100 mb-2 block">Aligning Distal Plane...</label>
+                            <input type="range" id="mpr-slider" min="0" max="100" value="0" class="w-full accent-gray-400 cursor-pointer">
+                        </div>
+                        <div class="flex gap-6 md:gap-8 text-right">
+                            <div>
+                                <div class="text-[11px] text-gray-400 uppercase font-bold tracking-wider">Wedge Angle</div>
+                                <div id="mpr-wedge-val" class="font-bold text-lg md:text-xl text-white">40.0&deg;</div>
+                            </div>
+                            <div>
+                                <div class="text-[11px] text-gray-400 uppercase font-bold tracking-wider">Projected Twist</div>
+                                <div id="mpr-proj-val" class="font-bold text-lg md:text-xl text-white">53.8&deg;</div>
+                            </div>
+                            <div>
+                                <div class="text-[11px] text-gray-400 uppercase font-bold tracking-wider">True Torsion</div>
+                                <div class="font-bold text-lg md:text-xl text-white">25&deg;</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col rounded-xl overflow-hidden border border-gray-800 shadow-inner bg-[#0a0c0f]">
+                        <!-- Top Viewport: MPR Slice -->
+                        <div class="relative w-full h-80 border-b border-gray-800">
+                            <div id="mpr-top-canvas" class="w-full h-full cursor-crosshair"></div>
+                        </div>
+
+                        <!-- Bottom Viewport: Physical Mediolateral View -->
+                        <div class="relative w-full h-80">
+                            <div id="mpr-bottom-canvas" class="w-full h-full cursor-move"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        
+            <section class="mb-16 mt-16" id="section-12">
+                <h3 class="text-lg md:text-2xl font-bold text-indigo-400 mb-4 md:mb-6 border-b border-gray-700 pb-2">12. Non-Linear Dynamics: Projected Twist vs. Screen Angle</h3>
+                <p class="mb-4 text-sm md:text-base leading-relaxed text-gray-300">To fully understand the clinical impact of optical distortions, we must model how the <strong>Projected Twist (b)</strong> and <strong>Screen Angle (S)</strong> behave as continuous mathematical functions of the true physical state of the bone, the <strong>Total Intrinsic Angle (T)</strong>.</p>
+
+                <div class="space-y-6">
+                    <div class="bg-gray-800/60 p-5 md:p-8 rounded-lg border border-gray-700 shadow-md">
+                        <h4 class="font-bold text-white mb-3 text-base md:text-xl">Step 1: The Total Intrinsic Torsion (T) Substitution</h4>
+                        <p class="text-sm md:text-base text-gray-300 mb-3">We established in Section 8 that the true physical twist embedded in the bone ($T$) is the sum of the user-commanded torsion (&theta;) and the geometric Codman-induced torsion (a'). Therefore:</p>
+                        <div class="text-center font-mono text-sm md:text-lg text-indigo-300 my-3 bg-gray-900 py-3 rounded border border-gray-700">
+                            T = &theta; + a' &nbsp;&nbsp;&rArr;&nbsp;&nbsp; &theta; = T - a'
+                        </div>
+                        <p class="text-sm md:text-base text-gray-300">To plot our optical projections strictly as a function of the true physical twist, we replace all instances of &theta; in our Extrinsic expansions with (T - a').</p>
+                    </div>
+
+                    <div class="bg-gray-800/60 p-5 md:p-8 rounded-lg border border-gray-700 shadow-md">
+                        <h4 class="font-bold text-white mb-3 text-base md:text-xl">Step 2: Deriving the Screen Angle Function, S(T)</h4>
+                        <p class="text-sm md:text-base text-gray-300 mb-3">The Screen Angle ($S$) passes the 3D coordinates through the camera matrices to get Normalised Device Coordinates (NDC). However, to calculate the true angle, we must cancel out the aspect ratio of the monitor by multiplying the NDC coordinates by the physical <strong>Width</strong> and <strong>Height</strong> of the pixel grid:</p>
+                        <div class="text-center font-mono text-sm md:text-lg text-white my-4 bg-gray-900 py-4 rounded border border-gray-700 overflow-x-auto px-2 whitespace-nowrap">
+                            <b>v</b><sub>ndc</sub>(T) = <big>(</big> P &middot; V &middot; <b>v</b><sub>distal</sub>(T) <big>)</big> / W<sub>clip</sub><br><br>
+                            <b>v</b><sub>pixel</sub>(T) = <big>(</big> <b>v</b><sub>ndc.x</sub> &times; Width,&nbsp; <b>v</b><sub>ndc.y</sub> &times; Height <big>)</big><br><br>
+                            S(T) = atan2( <b>v</b><sub>pixel_distal.y</sub>, <b>v</b><sub>pixel_distal.x</sub> ) - atan2( <b>v</b><sub>pixel_prox.y</sub>, <b>v</b><sub>pixel_prox.x</sub> )
+                        </div>
+                        <p class="text-sm md:text-base text-gray-300">Because perspective depth (W<sub>clip</sub>) scales non-linearly with physical translation, S(T) injects a continuous sinusoidal harmonic error (Camera Error) directly on top of the orthographic projection.</p>
+                    </div>
+                </div>
+
+                <div class="bg-[#0f1115] p-5 md:p-8 rounded-xl border border-gray-800 shadow-2xl mt-8">
+                    <h4 class="font-bold text-white mb-4 text-lg md:text-xl flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
+                        12.1 Interactive Proof: The Optical Harmonics Graph
+                    </h4>
+                    <p class="text-sm text-gray-300 mb-6">Adjust the angulation below to see how the camera error (the gap between the green and white lines) violently fluctuates across the entire spectrum of intrinsic torsion.</p>
+
+                    <div class="flex flex-col md:flex-row gap-6 mb-6">
+                        <div class="w-full md:w-1/2">
+                            <label class="text-sm font-semibold text-gray-100 mb-2 block">Procurvatum/Recurvatum (&phi;): <span id="s15-phi-val" class="text-red-400 font-mono">0&deg;</span></label>
+                            <input type="range" id="s15-phi" min="-89" max="89" value="15" class="w-full accent-red-500 cursor-pointer">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <label class="text-sm font-semibold text-gray-100 mb-2 block">Varus/Valgus (&psi;): <span id="s15-psi-val" class="text-blue-400 font-mono">0&deg;</span></label>
+                            <input type="range" id="s15-psi" min="-89" max="89" value="15" class="w-full accent-blue-500 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-72 md:h-96 bg-[#0a0a0a] rounded-lg border border-gray-700 overflow-hidden shadow-inner">
+                        <canvas id="s15-canvas" class="w-full h-full"></canvas>
+                        <div class="absolute top-3 left-3 bg-gray-900/90 backdrop-blur px-3 py-2 rounded text-xs text-gray-300 border border-gray-700 shadow-lg pointer-events-none">
+                            <div class="flex items-center mb-1.5"><span class="w-3 h-0.5 bg-green-400 mr-2 shadow-[0_0_5px_#4ade80]"></span> Projected Twist, b(T)</div>
+                            <div class="flex items-center"><span class="w-3 h-0.5 border-t border-dashed border-white mr-2"></span> Screen Angle, S(T)</div>
+                        </div>
+                        <div class="absolute bottom-2 right-3 text-[10px] md:text-xs text-gray-500 font-mono font-bold tracking-wider">X-AXIS: TOTAL INTRINSIC ANGLE (T)</div>
+                        <div class="absolute top-3 right-3 text-[10px] md:text-xs text-gray-500 font-mono font-bold tracking-wider" style="writing-mode: vertical-rl; transform: rotate(180deg);">Y-AXIS: MEASURED ANGLE</div>
+                    </div>
+                </div>
+            </section>
+
+        <div class="mt-8 pt-6 border-t border-gray-700 text-center pb-8">
+            <p class="text-gray-500 text-sm tracking-wide">Mathematical Framework & Simulator Created by <strong id="cr-3" class="text-indigo-400 font-semibold"></strong></p>
+        </div>
+    </div>
+</div>
+
+<!-- CAMERA PERSPECTIVE SCRIPT-->
+
+    <!-- ATAN2 VISUALISER SCRIPT-->
+        <!-- ── Draggable Projection Labels ──────────────────────── -->
+
+   <!-- MPR KINEMATIC INVERSION SIMULATOR SCRIPT -->
+    <!-- Import Map for Three.js (Fixes the module resolution errors) -->
+    
+
+
+    <!-- Mount point for the floating Deformity Tutor chatbot widget
+         (src/scripts/10-ai-tutor.js). The widget is fixed-positioned
+         so the mount has no visual layout role; it only scopes the
+         chatbot DOM outside the main app tree for easier inspection. -->
+    <div id="ai-tutor-mount"></div>
+
+    <!-- Bundled by Vite from src/main.js (replaces the previous
+         inline modules and the runtime CDN scripts for Tailwind
+         and three.js). -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
