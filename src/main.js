@@ -12,10 +12,15 @@
 
 import './index.css';
 
+// Mount the floating Deformity-Tutor chatbot first so that the widget
+// is registered even if a later scene script throws during module
+// evaluation (ES-module import errors abort evaluation of the
+// importing module, preventing any subsequent imports from running).
+import './scripts/10-ai-tutor.js';
+
 import './scripts/01-camera-perspective.js';
 import './scripts/02-atan2-visualizer.js';
 import './scripts/03-main-simulator.js';
 import './scripts/04-draggable-labels.js';
 import './scripts/05-mpr-simulator.js';
 import './scripts/06-graph12.js';
-import './scripts/10-ai-tutor.js';
