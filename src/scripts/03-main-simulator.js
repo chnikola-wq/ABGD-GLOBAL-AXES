@@ -149,6 +149,11 @@
             return `0.0&deg;`;
         }
 
+        // Expose for cross-module consumers (e.g. the screen-space visualiser
+        // in 04-draggable-labels.js). Required after migrating from
+        // <script>-tag globals to ES modules.
+        window.formatTorsion = formatTorsion;
+
         init();
         animate();
 
@@ -171,6 +176,9 @@
             scene.background = new THREE.Color(0x111827); 
 
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+            // Expose for the screen-space visualiser in 04-draggable-labels.js
+            // (was a global under the old <script>-tag setup).
+            window.camera = camera;
             
             // --- TOP-DOWN CAMERA SETUP (Gimbal Lock Fix) ---
             // A microscopic offset prevents the mathematical singularity
@@ -347,6 +355,9 @@
 
             distalBoneGroup = new THREE.Group();
             scene.add(distalBoneGroup);
+            // Expose for the screen-space visualiser in 04-draggable-labels.js
+            // (was a global under the old <script>-tag setup).
+            window.distalBoneGroup = distalBoneGroup;
 
             distalBoneMesh = new THREE.Mesh(geometry, distalMat);
             distalBoneMesh.position.y = -boneLength / 2;

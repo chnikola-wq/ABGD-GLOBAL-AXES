@@ -1,3 +1,5 @@
+    import * as THREE from 'three';
+
     (function() {
         const DRAGGABLE_IDS = ['proj-lbl-frontal', 'proj-lbl-sagittal', 'proj-lbl-transverse', 'label-wedge-angle'];
         const canvasContainer = document.getElementById('canvas-container');
@@ -237,7 +239,9 @@
             function renderScreenAngle() {
                 requestAnimationFrame(renderScreenAngle);
 
-                if (typeof camera === 'undefined' || typeof distalBoneGroup === 'undefined' || !distalBoneGroup) return;
+                if (typeof window.camera === 'undefined' || typeof window.distalBoneGroup === 'undefined' || !window.distalBoneGroup) return;
+                const camera = window.camera;
+                const distalBoneGroup = window.distalBoneGroup;
 
                 const hideAxes = document.getElementById('toggle-hide-axes');
                 if (hideAxes && hideAxes.checked) {
@@ -305,12 +309,12 @@
                 while (screenAngle < -Math.PI) screenAngle += 2 * Math.PI;
 
                 // --- LIVE HTML TEXT UPDATE ---
-                if (typeof window._liveApparentTorsion !== 'undefined' && typeof formatTorsion !== 'undefined') {
+                if (typeof window._liveApparentTorsion !== 'undefined' && typeof window.formatTorsion !== 'undefined') {
                     const liveError = screenAngle - window._liveApparentTorsion;
                     const errEl = document.getElementById('live-cam-err');
                     const angEl = document.getElementById('live-scr-ang');
-                    if (errEl) errEl.innerHTML = formatTorsion(liveError);
-                    if (angEl) angEl.innerHTML = formatTorsion(screenAngle);
+                    if (errEl) errEl.innerHTML = window.formatTorsion(liveError);
+                    if (angEl) angEl.innerHTML = window.formatTorsion(screenAngle);
                 }
 
                 if (Math.abs(screenAngle) < 0.01) {
